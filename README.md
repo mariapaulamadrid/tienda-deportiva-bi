@@ -70,13 +70,17 @@ A partir de los resultados obtenidos se plantearon posibles acciones comerciales
 * **Analizar las zonas con mayor concentración de clientes y facturación** para detectar posibles oportunidades comerciales.
 * Como mejora futura, **incorporar el costo histórico de cada producto al momento de la venta** para obtener cálculos de rentabilidad más precisos.
 
+## 📄 Documentación
+
+- 📊 [Ver presentación del proyecto](Presentacion_Tienda_Deportiva_GitHub.pdf)
+- 📘 [Ver informe detallado](Informe_Detallado_Tienda_Deportiva.pdf)
+
 ## 📁 Archivos del repositorio
 
-* `ddl.sql` — creación de tablas, claves y relaciones de la base de datos.
-* `generacion_datos.sql` — generación de datos ficticios para el análisis.
-* `analisis.sql` — consultas SQL utilizadas para explorar y analizar la información.
-* `dashboard.pbix` — modelo, medidas DAX y dashboard interactivo desarrollado en Power BI.
-
+- [`ddl.sql`](ddl.sql) — creación de tablas, claves y relaciones de la base de datos.
+- [`generacion_datos.sql`](generacion_datos.sql) — generación de datos ficticios para el análisis.
+- [`analisis.sql`](analisis.sql) — consultas SQL utilizadas para explorar y analizar la información.
+- [`dashboard.pbix`](dashboard.pbix) — modelo, medidas DAX y dashboard interactivo desarrollado en Power BI.
 ---
 
 **María Paula Madrid**
