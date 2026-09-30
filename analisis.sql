@@ -103,7 +103,94 @@ GROUP BY
 ORDER BY
     YEAR(v.Fecha_Venta),
     MONTH(v.Fecha_Venta);
-  
+
+-- 
+WITH facturacion_mensual AS (
+    SELECT
+        YEAR(v.Fecha_Venta) AS anio_venta,
+        MONTH(v.Fecha_Venta) AS mes_numero,
+        SUM(
+            d.Precio_Unitario * d.Cantidad *
+            (1 - d.Descuento_Porcentaje / 100)
+        ) AS Facturacion
+    FROM Venta v
+    JOIN Detalle_Venta d
+        ON v.Id_Venta = d.Id_Venta
+    WHERE v.Estado_Venta = 'Entregada'
+    GROUP BY YEAR(v.Fecha_Venta), MONTH(v.Fecha_Venta)
+),
+comparacion AS (
+    SELECT
+        anio_venta,
+        mes_numero,
+        Facturacion,
+        LAG(Facturacion) OVER (
+            ORDER BY anio_venta, mes_numero
+        ) AS Facturacion_Mes_Anterior
+    FROM facturacion_mensual
+)
+SELECT
+    anio_venta,
+    mes_numero,
+    CASE mes_numero
+    WHEN 1 THEN 'Enero'
+    WHEN 2 THEN 'Febrero'
+    WHEN 3 THEN 'Marzo'
+    WHEN 4 THEN 'Abril'
+    WHEN 5 THEN 'Mayo'
+    WHEN 6 THEN 'Junio'
+    WHEN 7 THEN 'Julio'
+    WHEN 8 THEN 'Agosto'
+    WHEN 9 THEN 'Septiembre'
+    WHEN 10 THEN 'Octubre'
+    WHEN 11 THEN 'Noviembre'
+    WHEN 12 THEN 'Diciembre'
+END AS mes_venta,
+    ROUND(Facturacion, 2) AS Facturacion,
+    ROUND(Facturacion_Mes_Anterior, 2) AS Facturacion_Mes_Anterior,
+    ROUND(
+        (Facturacion - Facturacion_Mes_Anterior)
+        / NULLIF(Facturacion_Mes_Anterior, 0) * 100,
+        2
+    ) AS Variacion_Mensual_Pct
+FROM comparacion
+ORDER BY anio_venta, mes_numero;
+    
+ --
+WITH facturacion_marca AS (
+    SELECT
+        m.Id_Marca,
+        m.Nombre_Marca,
+        SUM(
+            d.Precio_Unitario * d.Cantidad *
+            (1 - d.Descuento_Porcentaje / 100)
+        ) AS Facturacion
+    FROM Marca m
+    JOIN Producto p ON p.Id_Marca = m.Id_Marca
+    JOIN Detalle_Venta d ON d.Id_Producto = p.Id_Producto
+    JOIN Venta v ON v.Id_Venta = d.Id_Venta
+    WHERE v.Estado_Venta = 'Entregada'
+    GROUP BY m.Id_Marca, m.Nombre_Marca
+)
+SELECT
+    Nombre_Marca,
+    ROUND(Facturacion, 2) AS Facturacion,
+    ROUND(
+        SUM(Facturacion) OVER (
+            ORDER BY Facturacion DESC, Id_Marca
+        ),
+        2
+    ) AS Facturacion_Acumulada,
+    ROUND(
+        SUM(Facturacion) OVER (
+            ORDER BY Facturacion DESC, Id_Marca
+        )
+        / SUM(Facturacion) OVER () * 100,
+        2
+    ) AS Participacion_Acumulada_Pct
+FROM facturacion_marca
+ORDER BY Facturacion DESC, Id_Marca;
+
 -- ============================================================
 -- 3. PRODUCTOS
 -- ============================================================
@@ -207,21 +294,33 @@ group by v.Canal_Venta
 ORDER BY Facturacion desc; 
 
 -- ¿Cómo evolucionó la facturación de Web y Sucursal a lo largo de los años?
-Select
-YEAR(v.Fecha_venta)as anio_Facturacion,
-v.canal_venta, 
-ROUND(
-    SUM(
-        d.Precio_Unitario * d.Cantidad *
-        (1 - d.Descuento_Porcentaje / 100)
-    ) / 1000000,
-    2
-) AS Facturacion_Millones
-from detalle_venta d
-join venta v on d.Id_Venta = v.Id_Venta 
-where v.Estado_Venta='Entregada'
-group by v.Canal_Venta , anio_Facturacion
-ORDER BY anio_Facturacion desc; 
+WITH facturacion_canal_anual AS (
+    SELECT
+        YEAR(v.Fecha_Venta) AS anio_Facturacion,
+        v.Canal_Venta,
+        SUM(
+            d.Precio_Unitario * d.Cantidad *
+            (1 - d.Descuento_Porcentaje / 100)
+        ) AS Facturacion
+    FROM Detalle_Venta d
+    JOIN Venta v
+        ON d.Id_Venta = v.Id_Venta
+    WHERE v.Estado_Venta = 'Entregada'
+    GROUP BY YEAR(v.Fecha_Venta), v.Canal_Venta
+)
+SELECT
+    anio_Facturacion,
+    Canal_Venta,
+    ROUND(Facturacion / 1000000, 2) AS Facturacion_Millones,
+    ROUND(
+        Facturacion
+        / SUM(Facturacion) OVER (
+            PARTITION BY anio_Facturacion
+        ) * 100,
+        2
+    ) AS Participacion_Anual_Pct
+FROM facturacion_canal_anual
+ORDER BY anio_Facturacion DESC, Canal_Venta;
 
 -- ¿Qué método de pago genera mayor facturación?
 select 
@@ -336,6 +435,7 @@ WITH Rentabilidad_Marca AS (
     SELECT
         m.Id_Marca,
         m.Nombre_Marca,
+        SUM(d.Cantidad) AS Unidades_Vendidas,
 
         SUM(
             d.Precio_Unitario *
@@ -368,6 +468,7 @@ WITH Rentabilidad_Marca AS (
 
 SELECT
     Nombre_Marca,
+    Unidades_Vendidas,
     ROUND(Facturacion / 1000000, 2) AS Facturacion_Millones,
     ROUND(Ganancia_Estimada / 1000000, 2) AS Ganancia_Estimada_Millones,
 
@@ -391,17 +492,70 @@ SELECT
     d.Descuento_Porcentaje,
     COUNT(*) AS Cantidad_Lineas,
     SUM(d.Cantidad) AS Unidades_Vendidas,
-    ROUND(AVG(d.Cantidad), 2) AS Unidades_Promedio
+    ROUND(AVG(d.Cantidad), 2) AS Unidades_Promedio,
 
+    ROUND(
+        SUM(
+            d.Precio_Unitario * d.Cantidad *
+            (1 - d.Descuento_Porcentaje / 100)
+        ),
+        2
+    ) AS Facturacion_Neta,
+
+    ROUND(
+        SUM(
+            (
+                d.Precio_Unitario *
+                (1 - d.Descuento_Porcentaje / 100)
+                - p.Precio_Compra
+            ) * d.Cantidad
+        ),
+        2
+    ) AS Ganancia_Estimada,
+ROUND(
+    SUM(
+        (d.Precio_Unitario * (1 - d.Descuento_Porcentaje / 100)
+         - p.Precio_Compra) * d.Cantidad
+    )
+    / NULLIF(
+        SUM(
+            d.Precio_Unitario * d.Cantidad
+            * (1 - d.Descuento_Porcentaje / 100)
+        ),
+        0
+    ) * 100,
+    2
+) AS Margen_Estimado_Pct
 FROM Venta v
 JOIN Detalle_Venta d
     ON v.Id_Venta = d.Id_Venta
-
+JOIN Producto p
+    ON p.Id_Producto = d.Id_Producto
 WHERE v.Estado_Venta = 'Entregada'
-
 GROUP BY d.Descuento_Porcentaje
-
 ORDER BY d.Descuento_Porcentaje;
 
-
+-- ¿el descuento del 25% se concentra en alguna categoría deportiva? 
+SELECT
+    c.Nombre_Categoria,
+    d.Descuento_Porcentaje,
+    COUNT(*) AS Cantidad_Lineas,
+    SUM(d.Cantidad) AS Unidades_Vendidas,
+    ROUND(AVG(d.Cantidad), 2) AS Unidades_Promedio
+FROM Venta v
+JOIN Detalle_Venta d
+    ON v.Id_Venta = d.Id_Venta
+JOIN Producto p
+    ON d.Id_Producto = p.Id_Producto
+JOIN Categoria c
+    ON p.Id_Categoria = c.Id_Categoria
+WHERE v.Estado_Venta = 'Entregada'
+  AND d.Descuento_Porcentaje IN (20, 25)
+GROUP BY
+    c.Id_Categoria,
+    c.Nombre_Categoria,
+    d.Descuento_Porcentaje
+ORDER BY
+    c.Nombre_Categoria,
+    d.Descuento_Porcentaje;
 
