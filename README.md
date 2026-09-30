@@ -73,7 +73,6 @@ Las propuestas vinculan los resultados con acciones que requieren validación:
 
 ## 📄 Documentación
 
-- 📊 [Ver presentación del proyecto](Presentacion_Tienda_Deportiva_GitHub.pdf)
 - 📘 [Ver informe detallado](Informe_Tienda_Deportiva.pdf)
 
 ## 📁 Archivos del repositorio
