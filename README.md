@@ -52,23 +52,24 @@ Análisis de clientes, provincias, facturación geográfica, canales y métodos 
 
 ## 💡 Principales insights
 
-* El **canal Web** concentra la mayor parte de la facturación.
-* **Indumentaria y Calzado** son las categorías que generan mayores ingresos.
-* El producto con mayor cantidad de unidades vendidas no necesariamente es el que más factura.
-* Una mayor facturación no implica necesariamente un mayor margen de rentabilidad.
-* No se observó una relación directa entre aplicar mayores descuentos y vender más unidades.
-* El análisis geográfico permite identificar zonas con mayor concentración de clientes y facturación.
+Resultados de una tienda deportiva ficticia, con datos simulados de 2024 a 2026 y considerando únicamente ventas entregadas.
+
+* **El canal Web aumentó su participación en la facturación:** pasó del **54,10% en 2024 al 71,96% en 2026**, una diferencia de **17,86 puntos porcentuales**.
+* **Indumentaria y Calzado lideraron los ingresos**, con aproximadamente **$2.654 millones y $2.546 millones**, respectivamente.
+* **La facturación está distribuida entre las cinco marcas:** ninguna superó el **21% del total**. Cuatro marcas acumularon el **81,20%**, sin una dependencia marcada de una sola.
+* **Volumen, facturación y margen muestran distintos líderes:** Under Armour presentó el mayor margen estimado (**31,42%**), mientras que Puma generó la mayor ganancia estimada total (**$425,27 millones**).
+* **Los descuentos del 20% y 25% registraron márgenes estimados del 19,42% y 13,37%.** Las reglas de generación de los datos condicionan las cantidades vendidas, por lo que esta comparación no demuestra cómo responderían clientes reales ante un cambio de descuento.
 
 ## 📌 Recomendaciones
 
-A partir de los resultados obtenidos se plantearon posibles acciones comerciales:
+Las propuestas vinculan los resultados con acciones que requieren validación:
 
-* **Potenciar el canal Web**, debido a su participación dentro de la facturación.
-* **Evaluar los productos de forma integral**, considerando unidades vendidas, facturación y rentabilidad.
-* **Revisar la estrategia de descuentos**, ya que mayores descuentos no implicaron necesariamente un aumento de las ventas.
-* **Aprovechar los medios de pago más utilizados**, evaluando posibles promociones o beneficios asociados.
-* **Analizar las zonas con mayor concentración de clientes y facturación** para detectar posibles oportunidades comerciales.
-* Como mejora futura, **incorporar el costo histórico de cada producto al momento de la venta** para obtener cálculos de rentabilidad más precisos.
+* **Evaluar la operación y rentabilidad del canal Web antes de ampliar inversiones.** Analizar ventas entregadas, ticket promedio y ganancia estimada; incorporar costos de publicidad, comisiones y envíos, además de tiempos de entrega y devoluciones.
+* **Probar una mayor visibilidad de productos seleccionados de Under Armour**, manteniendo precios y descuentos. Medir unidades, ganancia adicional, costo de la acción y posibles desplazamientos de ventas de otras marcas. Su ventaja de margen frente a Puma es de **0,58 puntos porcentuales**, por lo que se propone una prueba limitada.
+* **Comparar descuentos del 20% y 25% en productos equivalentes durante el mismo período.** Evaluar si las ventas adicionales compensan el menor margen, considerando disponibilidad, exposición y costos de la promoción.
+* **Registrar el costo histórico de cada producto vendido** para calcular un margen bruto más preciso. Incorporar gastos operativos, comisiones, logística y devoluciones para evaluar la rentabilidad neta.
+
+> **Alcance:** los resultados describen un escenario simulado. La ganancia y el margen son estimaciones basadas en el costo del catálogo y no representan rentabilidad neta. Los datos de 2024 comienzan en marzo, por lo que las comparaciones anuales deben considerar esa cobertura parcial.
 
 ## 📄 Documentación
 
